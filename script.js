@@ -52,7 +52,7 @@ async function start() {
 }
 
 function loadLabeledImages() {
-  const labels = ["Kadek Pradnyana"];
+  const labels = ["Kadek Pradnyana", "Candra Pertiwi"];
   return Promise.all(
     labels.map(async (label) => {
       const descriptions = [];
