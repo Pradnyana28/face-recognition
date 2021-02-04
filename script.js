@@ -20,18 +20,23 @@ async function start() {
   const labeledFaceDescriptors = await loadLabeledImages();
   const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.6);
 
+  let image, canvas;
+
   imageUpload.addEventListener("change", async () => {
-    const image = await faceapi.bufferToImage(imageUpload.files[0]);
+    if (image) image.remove();
+    if (canvas) canvas.remove();
+
+    image = await faceapi.bufferToImage(imageUpload.files[0]);
     container.append(image);
 
-    const canvas = faceapi.createCanvasFromMedia(image);
+    canvas = faceapi.createCanvasFromMedia(image);
     container.append(canvas);
     const displaySize = { width: image.width, height: image.height };
     faceapi.matchDimensions(canvas, displaySize);
     const detections = await faceapi
       .detectAllFaces(image)
       .withFaceLandmarks()
-      .withFaceDescriptor();
+      .withFaceDescriptors();
     const resizedDetections = faceapi.resizeResults(detections, displaySize);
     const results = resizedDetections.map((d) =>
       faceMatcher.findBestMatch(d.descriptor)
@@ -47,13 +52,13 @@ async function start() {
 }
 
 function loadLabeledImages() {
-  const labels = ["Kadek Pradnyana", "Candra Pertiwi"];
+  const labels = ["Kadek Pradnyana"];
   return Promise.all(
     labels.map(async (label) => {
       const descriptions = [];
       for (let i = 1; i <= 1; i++) {
         const image = await faceapi.fetchImage(
-          `http://127.0.0.1:5500/labeled_images/${labels}/${i}.jpg`
+          `https://raw.githubusercontent.com/Pradnyana28/face-recognition/master/labeled_images/${label}/${i}.jpg`
         );
         const detections = await faceapi
           .detectSingleFace(image)
